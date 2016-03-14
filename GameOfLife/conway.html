@@ -1,0 +1,163 @@
+
+<html>
+  <head>
+    <style>
+      body { margin:0; padding:0 }
+    </style>
+  </head>
+
+  <body>
+    <canvas width="500px" height="500px"></canvas>
+  </body>
+  
+
+  <script>
+
+    
+    // below is for demo purposes only. please delete and replace with your own code 
+    canvas= document.querySelector( 'canvas' );
+    ctx= canvas.getContext( '2d' );
+    var rows=80
+    var cols= 80
+    var size=5
+    var stateArray=[];
+    var cells=[];
+	//shape code
+	shape={    
+		ctx: ctx,
+		row:0,
+        column:0,
+        state:"alive",
+        nextState:"",
+        liveColor:"black",
+        deadColor:"white",
+        fillStyle:"",
+		animate: function() {},
+		draw: function() {
+            //console.log("in draw");
+            console.log(this.state)
+            ctx.fillStyle=this.fillStyle;
+            
+            ctx.fillRect( this.row*size, this.column*size, size, size )
+            //prepareLineup();
+		},
+		status : function(){
+		console.log("x= " + this.x + " y= " +this.y)
+		}
+	  
+	}
+    setup();
+	function setup(){
+        console.log("in setup");
+      for(var y=0 ; y<cols ; y++){
+        for(var i=0 ; i<rows ; i++){
+          square=Object.create(shape);
+          square.row=i;
+          square.column=y;
+          var rnd=Math.random() * (4 - 1) + 1
+            if(rnd>=3){
+                square.state="alive";
+                square.fillStyle=square.liveColor;
+                     //console.log(square.state);
+                     //console.log(square.fillStyle)
+            }
+            else{
+                square.state="dead"
+                square.fillStyle=square.deadColor;
+                //console.log(square.fillStyle)
+            }
+           
+          square1=Object.create(square);
+	     cells.push(square1);
+	   }
+      }
+        draw();
+        setInterval(loop, 200);
+
+        function loop(){
+            //console.log("in loop");
+            prepareLineup();
+            update();
+            //cells[10].fillStyle="grey";
+            draw();
+        }
+    }
+    function prepareLineup(){
+        //console.log("in prepare lineup");
+        
+       for(var i=0 ; i<cells.length ; i++){
+           var aliveNeib=0;
+           var newState
+           square=cells[i];
+           //console.log(square);
+           //square.state=square.checkState(square.row, square.column);
+           if( square.state=="alive" && cells[i-1]!=undefined && cells[i-1].state=="alive") aliveNeib+=1
+           if( square.state=="alive" && cells[i+1]!=undefined && cells[i+1].state=="alive") aliveNeib+=1 
+           if( square.state=="alive" && cells[i-rows]!=undefined && cells[i-rows].state=="alive") aliveNeib+=1 
+           if( square.state=="alive" && cells[i+rows]!=undefined && cells[i+rows].state=="alive") aliveNeib+=1 
+           if( square.state=="alive" && cells[i-rows+1]!=undefined && cells[i-rows+1].state=="alive") aliveNeib+=1 
+           if( square.state=="alive" && cells[i+rows+1]!=undefined && cells[i+rows+1].state=="alive") aliveNeib+=1 
+           if( square.state=="alive" && cells[i-rows-1]!=undefined && cells[i-rows-1].state=="alive") aliveNeib+=1 
+           if( square.state=="alive" && cells[i+rows-1]!=undefined && cells[i+rows-1].state=="alive") aliveNeib+=1 
+            //console.log(aliveNeib);
+           
+           
+           if(square.state=="alive"){
+                if(aliveNeib== 2 || aliveNeib==3 ){
+                    cells[i].nextState="alive"; 
+                    cells[i].fillStyle=cells[i].liveColor
+                }
+                else if(aliveNeib<2 || aliveNeib>3){ 
+                    cells[i].nextState="dead"; 
+                    cells[i].fillStyle=cells[i].deadColor
+                }
+            }
+           else if(square.state=="dead"){
+               
+                if(aliveNeib== 3 ){ 
+                    cells[i].nextState="alive"; 
+                    cells[i].fillStyle=cells[i].liveColor
+                }
+           }
+         else{ newState="broken"; 
+                 console.log("prepare: "+aliveNeib +" : "+newState);
+                }
+           
+            
+           
+        }
+        // console.log("prepare: "+cells[10].state +" : "+cells[10].nextState);
+       //console.log(stateArray.length)
+       // update();
+    }
+    function draw(){
+      
+        //console.log("in draw");
+         for(var i=0 ; i<cells.length ; i++){
+            cells[i].draw();
+        }
+         // console.log("draw: "+cells[10].state +" : "+cells[10].nextState);
+    }
+    function update(){
+        
+        //console.log("in update");
+       // console.log(stateArray[0]);
+        for(var i=0 ; i<cells.length ; i++){
+           // console.log(stateArray[i]);
+           // cells[i].state=stateArray[i];
+              newVal= cells[i].nextState;
+              cells[i].state=newVal;
+             
+             //break;
+              //draw();
+              //prepareLineup();
+        }
+        //console.log("update: "+cells[10].state +" : "+cells[10].nextState);
+        //draw();
+        //prepareLineup();
+    }
+    
+   
+  </script>
+
+</html>

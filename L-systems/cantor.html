@@ -1,0 +1,129 @@
+<html>
+
+<head>
+     <style>
+      canvas {margin: auto;}
+         p{max-width:100%;
+             height:100%;
+         overflow:scroll;}
+         body{width:100%}
+    
+    </style>
+    
+</head>
+
+<body>
+    <script type="text/javascript" src="./victor.js"></script> 
+    <script type="text/javascript" src="./turtle.js"></script> 
+    
+    <canvas width="500px" height="500px"></canvas>
+</body>
+    
+    <script type = "text/javascript" >
+        var ctx = document.querySelector('canvas').getContext('2d')
+    var cantor = function () {
+
+      /*  lsys("AB", 4, {
+            A: 'BA'
+            , B: 'BA'
+        });*/
+
+        function lsys(axiom, its, rules) {
+            curIts = 1
+            printLine(axiom);
+            again(axiom)
+            newStr,finalStr;
+                //handle rules input
+            function again(startStr) {
+                letters = startStr.split("");
+                for(var i=0; i<letters.length; i++){
+                    for (l in rules) {
+                        //console.log(rules[l]);
+                        //console.log(l);
+                        if (letters[i] == l) {
+                            letters[i] = rules[l]
+                        }
+                       
+                    }
+                }
+                newStr = letters.join("");
+                printLine(newStr);
+                curIts++;
+                if (curIts <= its) {
+                    again(newStr);
+                    //console.log(newStr);
+                    //finalStr=newStr;
+                    //console.log(newStr);
+                }
+                else{
+                    finalStr=newStr;
+               // console.log(finalStr);
+                    }
+            }
+            console.log(finalStr);
+            return finalStr;
+
+        };
+
+        function printLine(string) {
+            var p = document.createElement('p');
+            p.innerHTML = string;
+            //document.querySelector('body').appendChild(p);
+        }
+       
+        function drawTree() {
+            var degToRad = function (deg) {
+                return deg * Math.PI / 180
+            }
+
+
+
+            paul = new Turtle(ctx, 50, 50)
+            
+            paul.move(10)
+            paul.rotate(degToRad(90))
+            paul.move(10)
+            paul.rotate(degToRad(90))
+            paul.move(10)
+            paul.rotate(degToRad(90))
+            paul.move(10)
+            paul.rotate(degToRad(90))
+
+        }
+    
+    function degToRad(deg) {
+                return deg * Math.PI / 180
+            }
+    function theta(deg) {
+                return  deg+sin^-1(deg);
+            }
+    drawLsys("F", 7, {
+            F:"F[+F]F[-F]F"
+            },20,150,500);
+           
+   drawLsys("X", 5, {
+       X:"FF[+X][X][-X]+FF",
+       F:"F"
+       },27.5,350,500);
+    function drawLsys(axiom, its, rules,theta, x, y) {
+        console.log("in draw lsys");
+            startStr= lsys(axiom, its, rules);
+            stack=[];
+            twiggy = new Turtle(ctx, x, y);
+            twiggy.dir = Victor( 0, -1 )   
+            letters = startStr.split("");
+        console.log(startStr);
+                for(var i=0; i<letters.length; i++){
+                    cur=letters[i];
+                  if(cur=="F"){ twiggy.move(10); console.log(cur+" move ");}
+                  if(cur=="+"){ twiggy.rotate(degToRad(-theta));console.log(cur+" rotate right");}
+                  if(cur=="-"){ twiggy.rotate(degToRad(theta));console.log(cur+" rotate left");}
+                  if(cur=="["){ twiggy.push();
+                               console.log(cur+" push");}
+                  if(cur=="]"){ twiggy.pop();
+                               console.log(cur+" pop");}
+                }
+        }
+    }();
+</script>
+<html>

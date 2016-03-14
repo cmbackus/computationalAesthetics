@@ -1,0 +1,166 @@
+
+<html>
+  <head>
+    <style>
+      body { margin:0; padding:0 }
+    </style>
+  </head>
+
+  <body>
+    <canvas width="500px" height="500px"></canvas>
+  </body>
+  
+
+  <script>
+      //Conway Modified:
+      
+      /*I changed the state of cells from alive or dead to a range of 0-255. From there, I changed the parammeters for the neighbor rule- a neighboring cell has an impact on its neighbors if its value is over 100. The variable for value(color) increment is set at 25. Anything below 50 yeilds a similar result- the population decreases dramatically at first, and then grows, the majority of cells the same color until they start affecting eachother(values over 100). From here, there are some clusters of 255 values surrounded by other high values, and between these clusters are baderns of black and white with few middle values inbetween.*/
+    
+    // below is for demo purposes only. please delete and replace with your own code 
+    canvas= document.querySelector( 'canvas' );
+    ctx= canvas.getContext( '2d' );
+    var rows=200
+    var cols= 200
+    var size=5
+    var stateArray=[];
+    var cells=[];
+    var inc=25;
+	//shape code
+	shape={    
+		ctx: ctx,
+		row:0,
+        column:0,
+        state:255,
+        nextState:254,
+        liveColor:"black",
+        deadColor:"white",
+        fillStyle:"",
+		animate: function() {},
+		draw: function() {
+            //console.log("in draw");
+            //console.log(this.state)
+            ctx.fillStyle=this.fillStyle;
+            
+            ctx.fillRect( this.row*size, this.column*size, size, size )
+            //prepareLineup();
+		},
+		status : function(){
+		console.log("x= " + this.x + " y= " +this.y)
+		}
+	  
+	}
+    setup();
+	function setup(){
+       // console.log("in setup");
+      for(var y=0 ; y<cols ; y++){
+        for(var i=0 ; i<rows ; i++){
+          square=Object.create(shape);
+          square.row=i;
+          square.column=y;
+          var rnd=Math.random() * (4 - 1) + 1
+            if(rnd>=3){
+                square.state=255;
+                square.fillStyle=square.liveColor;
+                     //console.log(square.state);
+                     //console.log(square.fillStyle)
+            }
+            else{
+                square.state=0;
+                square.fillStyle=square.deadColor;
+                //console.log(square.fillStyle)
+            }
+           
+          square1=Object.create(square);
+	     cells.push(square1);
+	   }
+      }
+        draw();
+        setInterval(loop, 10);
+
+        function loop(){
+            //console.log("in loop");
+            prepareLineup();
+            update();
+            //cells[10].fillStyle="grey";
+            draw();
+        }
+    }
+    function prepareLineup(){
+        //console.log("in prepare lineup");
+        
+       for(var i=0 ; i<cells.length ; i++){
+           var aliveNeib=0;
+           var newState
+           square=cells[i];
+           //console.log(square);
+           //square.state=square.checkState(square.row, square.column);
+           if( square.state!=0 && cells[i-1]!=undefined && cells[i-1].state>=50) aliveNeib+=1
+           if( square.state!=0 && cells[i+1]!=undefined && cells[i+1].state>=50) aliveNeib+=1 
+           if( square.state!=0 && cells[i-rows]!=undefined && cells[i-rows].state>=50) aliveNeib+=1 
+           if( square.state!=0 && cells[i+rows]!=undefined && cells[i+rows].state>=50) aliveNeib+=1 
+           if( square.state!=0 && cells[i-rows+1]!=undefined && cells[i-rows+1].state>=50) aliveNeib+=1 
+           if( square.state!=0 && cells[i+rows+1]!=undefined && cells[i+rows+1].state>=50) aliveNeib+=1 
+           if( square.state!=0 && cells[i-rows-1]!=undefined && cells[i-rows-1].state>=50) aliveNeib+=1 
+           if( square.state!=0 && cells[i+rows-1]!=undefined && cells[i+rows-1].state>=50) aliveNeib+=1 
+            //console.log(aliveNeib);
+           
+           
+           if(square.state>=inc && square.state<=255){
+                if(aliveNeib== 2 || aliveNeib==3 ){
+                    cells[i].nextState+=inc; 
+                    cells[i].fillStyle="rgb("+cells[i].nextState+","+cells[i].nextState+","+cells[i].nextState+")"
+                }
+                else if(aliveNeib<2 || aliveNeib>3){ 
+                    cells[i].nextState-=inc; 
+                    cells[i].fillStyle="rgb("+cells[i].nextState+","+cells[i].nextState+","+cells[i].nextState+")"
+                }
+            }
+           else if(square.state<=0){
+               
+                if(aliveNeib== 3 ){ 
+                    cells[i].nextState+=inc; 
+                    cells[i].fillStyle="rgb("+cells[i].nextState+","+cells[i].nextState+","+cells[i].nextState+")"
+                }
+           }
+         else{ newState="broken"; 
+                 console.log("prepare: "+aliveNeib +" : "+newState);
+                }
+           
+            
+           
+        }
+        // console.log("prepare: "+cells[10].state +" : "+cells[10].nextState);
+       //console.log(stateArray.length)
+       // update();
+    }
+    function draw(){
+      
+        //console.log("in draw");
+         for(var i=0 ; i<cells.length ; i++){
+            cells[i].draw();
+        }
+         // console.log("draw: "+cells[10].state +" : "+cells[10].nextState);
+    }
+    function update(){
+        
+        //console.log("in update");
+       // console.log(stateArray[0]);
+        for(var i=0 ; i<cells.length ; i++){
+           // console.log(stateArray[i]);
+           // cells[i].state=stateArray[i];
+              newVal= cells[i].nextState;
+              cells[i].state=newVal;
+             
+             //break;
+              //draw();
+              //prepareLineup();
+        }
+        //console.log("update: "+cells[10].state +" : "+cells[10].nextState);
+        //draw();
+        //prepareLineup();
+    }
+    
+   
+  </script>
+
+</html>
