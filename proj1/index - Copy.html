@@ -1,0 +1,243 @@
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0
+        }
+        
+        canvas {
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width="500px" height="500px"></canvas>
+</body>
+
+
+<script>
+    //Conway Modified:
+
+    // below is for demo purposes only. please delete and replace with your own code 
+    canvas = document.querySelector('canvas');
+    ctx = canvas.getContext('2d');
+    var a = {
+        x: 5
+        , y: 5
+    }
+    var b = {
+        x: 15
+        , y: 15
+    }
+    var c = {
+        x: 25
+        , y: 25
+    }
+    var rows = 30
+    var cols = 30
+    var size = 20
+    var stateArray = [];
+    var cells = [];
+    var width = 500
+        //shape code
+    shape = {
+        ctx: ctx
+        , row: 0
+        , column: 0
+        , type: "a"
+        , aColor: "black"
+        , bColor: "grey"
+        , cColor: "purple"
+        , fillStyle: ""
+        , state: "alive"
+        , draw: function () {
+
+            this.wrap();
+            ctx.fillStyle = this.fillStyle;
+
+            //ctx.fillRect(this.row * size, this.column * size, size, size)
+            ctx.beginPath();
+            ctx.arc(this.row * size - (size / 4), this.column * size - (size / 4), size / 4, 0, 2 * Math.PI);
+            ctx.fill();
+            //prepareLineup();
+        }
+        , status: function () {
+            console.log("x= " + this.x + " y= " + this.y)
+        }
+        , move: function () {
+            if (this.row * size > width || this.col * size < 0) {
+                //this.row = rows / 2;
+                //this.column = cols / 2;
+                //this.state = "dead"
+            }
+
+            this.draw();
+            // this.col = this.nextCol;
+            //this.row = this.nextRow;
+        }
+        , converge: function (desCol, desRow) {
+            if (desRow - 10 < this.row < desRow + 10) {
+                if (this.row > desRow - 5) {
+                    this.row -= 1;
+                }
+                if (this.row < desRow + 5) {
+                    this.row += 1;
+                }
+            }
+            if (desCol - 10 < this.column < desCol + 10) {
+                if (this.column > desCol - 5) {
+                    this.column -= 1;
+                }
+                if (this.column < desCol + 5) {
+                    this.column += 1;
+                }
+            }
+        }
+        , wrap: function () {
+            if (this.row > rows) {
+                this.row = 1
+            }
+
+            if (this.row < 1) {
+                this.row = rows
+            }
+
+            if (this.column > cols) {
+                this.column = 1
+            }
+            if (this.column < 1) {
+                this.column = cols
+            }
+
+        }
+
+
+
+
+    }
+    setup();
+
+    function setup() {
+        // console.log("in setup");
+        for (var y = 0; y < cols; y++) {
+            for (var i = 0; i < rows; i++) {
+                square = Object.create(shape);
+                square.row = i;
+                square.column = y;
+                var rnd = Math.random() * (4 - 1) + 1
+                if (rnd >= 3) {
+                    square.type = "a";
+                    square.fillStyle = square.aColor;
+                    //console.log(square.state);
+                    //console.log(square.fillStyle)
+                } else if (rnd >= 2 && rnd < 3) {
+                    square.type = "b";
+                    square.fillStyle = square.bColor;
+                    //console.log(square.fillStyle)
+                } else if (rnd < 2) {
+                    square.type = "c";
+                    square.fillStyle = square.cColor;
+                    //console.log(square.fillStyle)
+                }
+                square1 = Object.create(square);
+                cells.push(square1);
+            }
+        }
+        draw();
+        setInterval(loop, 500);
+
+        function loop() {
+            //console.log("in loop");
+            prepareLineup();
+            update();
+            //cells[10].fillStyle="grey";
+            //draw();
+        }
+    }
+
+    function prepareLineup() {
+        //console.log("in prepare lineup");
+        // 
+        moveConvergePoints();
+        //console.log(rnd);
+        for (var i = 0; i < cells.length; i++) {
+            var aliveNeib = 0;
+            //var newState
+            square = cells[i];
+            if (square.state == "alive") {
+                if (square.type == "a") {
+                    square.converge(a.x, a.y);
+                }
+                if (square.type == "b") {
+                    square.converge(b.x, b.y);
+                }
+                if (square.type == "c") {
+                    square.converge(c.x, c.y);
+                }
+
+            } else {
+                cells.pop(square);
+            }
+            //console.log(square);
+            //square.state=square.checkState(square.row, square.column);
+            /*
+            if (square.state != 0 && cells[i - 1] != undefined && cells[i - 1].state >= 50) aliveNeib += 1
+            if (square.state != 0 && cells[i + 1] != undefined && cells[i + 1].state >= 50) aliveNeib += 1
+            if (square.state != 0 && cells[i - rows] != undefined && cells[i - rows].state >= 50) aliveNeib += 1
+            if (square.state != 0 && cells[i + rows] != undefined && cells[i + rows].state >= 50) aliveNeib += 1
+    
+            */
+
+        }
+    }
+
+    function draw() {
+
+        //console.log("in draw");
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].draw();
+        }
+        // console.log("draw: "+cells[10].state +" : "+cells[10].nextState);
+    }
+
+    function update() {
+
+        //console.log("in update");
+        // console.log(stateArray[0]);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < cells.length; i++) {
+            // console.log(stateArray[i]);
+            // cells[i].state=stateArray[i];
+            cells[i].move();
+            //cells[i].state = newVal;
+
+            //break;
+            //draw();
+            //prepareLineup();
+        }
+        //console.log("update: "+cells[10].state +" : "+cells[10].nextState);
+        //draw();
+        //prepareLineup();
+    }
+
+    function moveConvergePoints() {
+        var rnd = (Math.random() * (4)).toFixed()
+        if (rnd == 1) {
+            a.x += 1;
+            c.y += 1
+        }
+        if (rnd == 2) {
+            b.x += 1;
+            b.y -= 1
+        }
+        if (rnd == 3) {
+            b.x -= 1;
+            a.y -= 1
+        }
+    }
+</script>
+
+</html>
